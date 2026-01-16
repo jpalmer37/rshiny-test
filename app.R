@@ -59,7 +59,12 @@ server <- function(input, output, session) {
   data <- reactive({
     # Use default data if checkbox is selected
     if (input$use_default) {
-      df <- read.csv("sample_data.csv", stringsAsFactors = FALSE)
+      default_file <- "sample_data.csv"
+      if (!file.exists(default_file)) {
+        showNotification("Default data file not found!", type = "error", duration = 5)
+        return(NULL)
+      }
+      df <- read.csv(default_file, stringsAsFactors = FALSE)
       return(df)
     }
     
@@ -71,7 +76,10 @@ server <- function(input, output, session) {
       return(df)
     },
     error = function(e) {
-      # Return NULL if error occurs
+      # Show error notification to user
+      showNotification(paste("Error reading file:", e$message), 
+                       type = "error", 
+                       duration = 5)
       return(NULL)
     })
   })
