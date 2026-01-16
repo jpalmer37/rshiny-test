@@ -73,6 +73,18 @@ server <- function(input, output, session) {
     
     tryCatch({
       df <- read.csv(input$file$datapath, stringsAsFactors = FALSE)
+      
+      # Validate required columns
+      required_cols <- c("date", "product", "sales", "revenue", "region", "customer_satisfaction")
+      missing_cols <- setdiff(required_cols, names(df))
+      
+      if (length(missing_cols) > 0) {
+        showNotification(paste("Missing required columns:", paste(missing_cols, collapse = ", ")), 
+                         type = "error", 
+                         duration = 5)
+        return(NULL)
+      }
+      
       return(df)
     },
     error = function(e) {
